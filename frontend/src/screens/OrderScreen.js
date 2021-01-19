@@ -3,30 +3,74 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { getOrders } from '../actions/orderActions'
-import ReactPaginate from 'react-paginate'
+import { getOrders, updateOrder } from '../actions/orderActions'
 import { FaEdit, FaPrint, FaTrash } from 'react-icons/fa'
 import { confirmAlert } from 'react-confirm-alert'
 import { Confirm } from '../components/Confirm'
 import OrderEditScreen from './OrderEditScreen'
+import Pagination from '../components/Pagination'
 
 const OrderScreen = () => {
+  const [mobile, setMobile] = useState('')
+  const [paidAmount, setPaidAmount] = useState(0.0)
+  const [discountAmount, setDiscountAmount] = useState(0.0)
+  const [totalPrice, setTotalPrice] = useState([])
+  const [orderId, setOrderId] = useState(null)
+
   const dispatch = useDispatch()
 
   const orderList = useSelector((state) => state.orderList)
   const { orders, error, loading } = orderList
+
+  const orderUpdate = useSelector((state) => state.orderUpdate)
+  const {
+    success: successUpdate,
+    error: errorUpdate,
+    loading: loadingUpdate,
+  } = orderUpdate
 
   //   Calculate prices
   const addDecimal = (num) => {
     return (Math.round(num * 100) / 100).toFixed(2)
   }
 
+  const formCleanHandler = () => {
+    setMobile('')
+    setPaidAmount(0.0)
+    setDiscountAmount(0.0)
+    setTotalPrice([])
+  }
+
   useEffect(() => {
     dispatch(getOrders())
-  }, [dispatch])
+    if (successUpdate) {
+      formCleanHandler()
+    }
+  }, [dispatch, successUpdate])
 
   const deleteHandler = (id) => {
     confirmAlert(Confirm(() => dispatch))
+  }
+
+  const editHandler = (e) => {
+    setMobile(e.mobile)
+    setPaidAmount(e.paidAmount)
+    setDiscountAmount(e.discountAmount)
+    setTotalPrice(e.orderItems)
+    setOrderId(e._id)
+  }
+
+  const submitHandler = (e) => {
+    // e.preventDefault()
+
+    dispatch(
+      updateOrder({
+        mobile,
+        paidAmount,
+        discountAmount,
+        _id: orderId,
+      })
+    )
   }
 
   const [currentPage, setCurrentPage] = useState(1)
@@ -92,6 +136,7 @@ const OrderScreen = () => {
                           data-bs-toggle='modal'
                           data-bs-target='#editOrderModal'
                           className='btn btn-info btn-sm'
+                          onClick={() => editHandler(order)}
                         >
                           <FaEdit />
                         </button>
@@ -108,29 +153,29 @@ const OrderScreen = () => {
               </tbody>
             </table>
           </div>
-          <OrderEditScreen />
+
+          <OrderEditScreen
+            submitHandler={submitHandler}
+            mobile={mobile}
+            discountAmount={discountAmount}
+            paidAmount={paidAmount}
+            orderItems={totalPrice}
+            setMobile={setMobile}
+            setDiscountAmount={setDiscountAmount}
+            setPaidAmount={setPaidAmount}
+            errorUpdate={errorUpdate}
+            loadingUpdate={loadingUpdate}
+            formCleanHandler={formCleanHandler}
+            successUpdate={successUpdate}
+          />
         </div>
       )}
       <div className='d-flex justify-content-center'>
-        <ReactPaginate
-          previousLabel='previous'
-          previousClassName='page-item'
-          previousLinkClassName='page-link'
-          nextLabel='next'
-          nextClassName='page-item'
-          nextLinkClassName='page-link'
-          pageClassName='page-item'
-          pageLinkClassName='page-link'
-          activeClassName='page-item active'
-          activeLinkClassName={'page-link'}
-          breakLabel={'...'}
-          breakClassName={'page-item'}
-          breakLinkClassName={'page-link'}
-          pageCount={totalItems && totalItems}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={2}
-          onPageChange={(e) => setCurrentPage(e.selected + 1)}
-          containerClassName={'page pagination'}
+        <Pagination
+          setCurrentPage={setCurrentPage}
+          totalItems={totalItems}
+          arrayLength={orders && orders.length}
+          itemsPerPage={itemsPerPage}
         />
       </div>
     </>

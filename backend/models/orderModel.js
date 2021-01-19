@@ -11,10 +11,6 @@ const orderScheme = mongoose.Schema(
       type: String,
       required: true,
     },
-    remain: {
-      type: Boolean,
-      default: true,
-    },
     note: {
       type: String,
     },
@@ -31,9 +27,6 @@ const orderScheme = mongoose.Schema(
     paidAmount: {
       type: Number,
       required: true,
-    },
-    paidAt: {
-      type: Date,
     },
     orderItems: [
       {

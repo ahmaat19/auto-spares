@@ -1,17 +1,27 @@
-import React from 'react'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
+import { FaCheckCircle } from 'react-icons/fa'
 
 const OrderEditScreen = ({
   formCleanHandler,
   submitHandler,
-  message,
   successUpdate,
   errorUpdate,
   loadingUpdate,
   loading,
   error,
+
+  mobile,
+  discountAmount,
+  paidAmount,
+  setMobile,
+  setDiscountAmount,
+  setPaidAmount,
+  orderItems,
 }) => {
+  const totalPrice = orderItems
+    .reduce((acc, item) => acc + item.qty * item.price, 0)
+    .toFixed(2)
   return (
     <div>
       <div
@@ -27,7 +37,7 @@ const OrderEditScreen = ({
           <div className='modal-content modal-background'>
             <div className='modal-header'>
               <h5 className='modal-title' id='editOrderModalLabel'>
-                Edit Order
+                Total Amount: ${totalPrice}
               </h5>
               <button
                 type='button'
@@ -38,7 +48,6 @@ const OrderEditScreen = ({
               ></button>
             </div>
             <div className='modal-body'>
-              {message && <Message variant='danger'>{message}</Message>}
               {successUpdate && (
                 <Message variant='success'>
                   Order has been updated successfully.
@@ -52,21 +61,60 @@ const OrderEditScreen = ({
               ) : error ? (
                 <Message variant='danger'>{error}</Message>
               ) : (
-                <form onSubmit={submitHandler}>
-                  <div className='modal-footer'>
-                    <button
-                      type='button'
-                      className='btn btn-secondary'
-                      data-bs-dismiss='modal'
-                      onClick={formCleanHandler}
-                    >
-                      Close
-                    </button>
-                    <button type='submit' className='btn btn-primary'>
-                      Update
-                    </button>
-                  </div>
-                </form>
+                <ul className='list-group list-group-flush pt-1'>
+                  {error && <Message variant='danger'> {error} </Message>}
+
+                  <form onSubmit={(e) => submitHandler(e)}>
+                    <label htmlFor='mobile'>Mobile</label>
+                    <input
+                      type='number'
+                      className='form-control'
+                      placeholder='615665566'
+                      min='0'
+                      name='mobile'
+                      value={mobile}
+                      onChange={(e) => setMobile(e.target.value)}
+                      required
+                    />
+                    <label htmlFor='discountAmount'>Discount Amount</label>
+                    <input
+                      name='discountAmount'
+                      type='number'
+                      min='0'
+                      max={totalPrice}
+                      className='form-control'
+                      placeholder='Enter a discount amount'
+                      value={discountAmount}
+                      onChange={(e) => setDiscountAmount(e.target.value)}
+                    />
+
+                    <label htmlFor='paidAmount'>Paid Amount</label>
+                    <input
+                      name='paidAmount'
+                      type='number'
+                      min='0'
+                      max={totalPrice}
+                      className='form-control'
+                      placeholder='Enter a paid amount'
+                      value={paidAmount}
+                      onChange={(e) => setPaidAmount(e.target.value)}
+                    />
+
+                    <div className='modal-footer'>
+                      <button
+                        type='button'
+                        className='btn btn-secondary btn-sm'
+                        data-bs-dismiss='modal'
+                        onClick={formCleanHandler}
+                      >
+                        Close
+                      </button>
+                      <button type='submit' className='btn btn-primary btn-sm'>
+                        <FaCheckCircle /> Recept Update
+                      </button>
+                    </div>
+                  </form>
+                </ul>
               )}
             </div>
           </div>

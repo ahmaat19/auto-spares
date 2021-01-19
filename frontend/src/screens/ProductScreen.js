@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import ReactPaginate from 'react-paginate'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
@@ -12,6 +11,7 @@ import {
 import { confirmAlert } from 'react-confirm-alert'
 import { Confirm } from '../components/Confirm'
 import { FaTrash, FaEdit } from 'react-icons/fa'
+import Pagination from '../components/Pagination'
 
 const ProductScreen = () => {
   const [edit, setEdit] = useState(false)
@@ -324,30 +324,15 @@ const ProductScreen = () => {
                 No data found!
               </span>
             )}
-            {currentItems && currentItems.length > itemsPerPage && (
-              <div className='d-flex justify-content-center'>
-                <ReactPaginate
-                  previousLabel='previous'
-                  previousClassName='page-item'
-                  previousLinkClassName='page-link'
-                  nextLabel='next'
-                  nextClassName='page-item'
-                  nextLinkClassName='page-link'
-                  pageClassName='page-item'
-                  pageLinkClassName='page-link'
-                  activeClassName='page-item active'
-                  activeLinkClassName={'page-link'}
-                  breakLabel={'...'}
-                  breakClassName={'page-item'}
-                  breakLinkClassName={'page-link'}
-                  pageCount={totalItems && totalItems}
-                  marginPagesDisplayed={2}
-                  pageRangeDisplayed={2}
-                  onPageChange={(e) => setCurrentPage(e.selected + 1)}
-                  containerClassName={'page pagination'}
-                />
-              </div>
-            )}
+
+            <div className='d-flex justify-content-center'>
+              <Pagination
+                setCurrentPage={setCurrentPage}
+                totalItems={totalItems}
+                arrayLength={products && products.length}
+                itemsPerPage={itemsPerPage}
+              />
+            </div>
           </div>
         </>
       )}

@@ -8,6 +8,9 @@ import {
   ORDER_FAIL,
   ORDER_REQUEST,
   ORDER_SUCCESS,
+  ORDER_UPDATE_FAIL,
+  ORDER_UPDATE_REQUEST,
+  ORDER_UPDATE_SUCCESS,
 } from '../constants/orderConstants'
 import { CLEAR_ALERTS } from '../constants/userConstants'
 
@@ -78,6 +81,33 @@ export const ordersReducer = (state = { orders: [] }, action) => {
       return {
         loading: false,
         error: action.payload,
+      }
+
+    default:
+      return state
+  }
+}
+
+export const orderUpdateReducer = (state = {}, action) => {
+  switch (action.type) {
+    case ORDER_UPDATE_REQUEST:
+      return {
+        loading: true,
+      }
+    case ORDER_UPDATE_SUCCESS:
+      return {
+        loading: false,
+        success: true,
+      }
+    case ORDER_UPDATE_FAIL:
+      return {
+        loading: false,
+        error: action.payload,
+      }
+
+    case CLEAR_ALERTS:
+      return {
+        success: false,
       }
 
     default:

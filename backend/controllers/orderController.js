@@ -4,7 +4,6 @@ import OrderModel from '../models/orderModel.js'
 export const addOrderItems = asyncHandler(async (req, res) => {
   const {
     orderItems,
-    remain,
     mobile,
     paidAmount,
     discountAmount,
@@ -19,7 +18,6 @@ export const addOrderItems = asyncHandler(async (req, res) => {
     const order = new OrderModel({
       orderItems,
       user: req.user._id,
-      remain,
       mobile,
       paidAmount,
       discountAmount,
@@ -46,25 +44,31 @@ export const getOrders = asyncHandler(async (req, res) => {
   res.json(orders)
 })
 
-// const updateOrderToPaid = asyncHandler(async (req, res) => {
-//   const order = await Order.findById(req.params.id)
+export const updateOrder = asyncHandler(async (req, res) => {
+  const { mobile, discountAmount, paidAmount } = req.body
 
-//   if (order) {
-//     order.remain = true
-//     order.paidAt = Date.now()
-//     order.paymentResult = {
-//       id: req.body.id,
-//       status: req.body.status,
-//       update_time: req.body.update_time,
-//       email_address: req.body.payer.email_address,
-//     }
-//     const updatedOrder = await order.save()
-//     res.json(updatedOrder)
-//   } else {
-//     res.status(404)
-//     throw new Error('Order not found')
-//   }
-// })
+  const order = await OrderModel.findById(req.params.id)
+
+  if (order) {
+    order.mobile = mobile
+    order.discountAmount = discountAmount
+    order.paidAmount = paidAmount
+
+    const updatedOrder = await order.save()
+
+    if (updatedOrder) {
+      res.status(201).json(updatedOrder)
+    } else {
+      res.status(404)
+      throw new Error('Order not found')
+    }
+
+    res.status(201).json(updatedOrder)
+  } else {
+    res.status(404)
+    throw new Error('Order not found')
+  }
+})
 
 // const getMyOrders = asyncHandler(async (req, res) => {
 //   const orders = await Order.find({ user: req.user._id })

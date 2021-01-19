@@ -10,14 +10,8 @@ const CartScreen = ({ match, location, history }) => {
   const productId = match.params.id
   const qty = location.search ? Number(location.search.split('=')[1]) : 1
   const [mobile, setMobile] = useState('')
-  const [remain, setRemain] = useState(false)
   const [paidAmount, setPaidAmount] = useState(0.0)
   const [discountAmount, setDiscountAmount] = useState(0.0)
-
-  //   Calculate prices
-  const addDecimal = (num) => {
-    return (Math.round(num * 100) / 100).toFixed(2)
-  }
 
   const dispatch = useDispatch()
   const cart = useSelector((state) => state.cart)
@@ -53,15 +47,14 @@ const CartScreen = ({ match, location, history }) => {
 
   const submitHandler = (e) => {
     e.preventDefault()
+
     const order = {
-      remain,
       mobile,
-      paidAmount: remain ? addDecimal(paidAmount) : totalPrice - discountAmount,
+      paidAmount,
       discountAmount,
       totalPrice,
       orderItems: cartItems,
     }
-    console.log(order)
     dispatch(createOrder(order))
   }
 
@@ -160,37 +153,23 @@ const CartScreen = ({ match, location, history }) => {
                     min='0'
                     max={totalPrice}
                     className='form-control'
-                    placeholder='Enter a paid amount'
+                    placeholder='Enter a discount amount'
                     value={discountAmount}
                     onChange={(e) => setDiscountAmount(e.target.value)}
                   />
-                  <div className='form-check form-switch ml-3 mt-1'>
-                    <input
-                      className='form-check-input shadow-none'
-                      type='checkbox'
-                      id='checkbox'
-                      checked={remain}
-                      onChange={(e) => setRemain(e.target.checked)}
-                    />
-                    <label className='form-check-label' htmlFor='checkbox'>
-                      Remain?
-                    </label>
-                  </div>
-                  {remain && (
-                    <>
-                      <label htmlFor='paidAmount'>Paid Amount</label>
-                      <input
-                        name='paidAmount'
-                        type='number'
-                        min='0'
-                        max={totalPrice}
-                        className='form-control'
-                        placeholder='Enter a paid amount'
-                        value={paidAmount}
-                        onChange={(e) => setPaidAmount(e.target.value)}
-                      />
-                    </>
-                  )}
+
+                  <label htmlFor='paidAmount'>Paid Amount</label>
+                  <input
+                    name='paidAmount'
+                    type='number'
+                    min='0'
+                    max={totalPrice}
+                    className='form-control'
+                    placeholder='Enter a paid amount'
+                    value={paidAmount}
+                    onChange={(e) => setPaidAmount(e.target.value)}
+                  />
+
                   <button
                     type='submit'
                     className='btn btn-success btn-sm float-end mt-1'
