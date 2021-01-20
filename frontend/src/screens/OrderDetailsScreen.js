@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { CLEAR_ALERTS } from '../constants/userConstants'
 import Message from '../components/Message'
@@ -7,8 +7,15 @@ import { getOrderDetails } from '../actions/orderActions'
 import Moment from 'react-moment'
 import moment from 'moment'
 import { FaPrint } from 'react-icons/fa'
+import { useReactToPrint } from 'react-to-print'
 
 const OrderDetailsScreen = ({ match }) => {
+  const componentRef = useRef()
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: 'Sabra Auto',
+  })
+
   const dispatch = useDispatch()
 
   const orderDetails = useSelector((state) => state.orderDetails)
@@ -35,14 +42,14 @@ const OrderDetailsScreen = ({ match }) => {
       ) : (
         <div className='row '>
           <div className='mx-auto col-lg-8 col-md-8 col-sm-12 col-12'>
-            <div className='card'>
+            <div className='card' ref={componentRef}>
               <ul className='list-group list-group-flush'>
                 <li className='list-group-item d-flex justify-content-between'>
                   <Moment format='YYYY-MM-DD'>{moment(order.createdAt)}</Moment>
                   <Moment format='HH:mm:ss'>{moment(order.createdAt)}</Moment>
                 </li>
                 <li className='list-group-item text-center'>SABRA AUTO</li>
-                <div className='cart-body p-3'>
+                <div className='cart-body px-3'>
                   <div className='cart-text'>
                     <p className='text-center '>
                       <span className='fw-bold'>Invoice#:</span> {order._id}
@@ -118,10 +125,13 @@ const OrderDetailsScreen = ({ match }) => {
                   </div>
                 </div>
               </ul>
-              <button className='btn btn-success btn-sm'>
-                <FaPrint /> Print
-              </button>
             </div>
+            <button
+              onClick={handlePrint}
+              className='btn btn-success btn-sm form-control'
+            >
+              <FaPrint /> Print
+            </button>
           </div>
         </div>
       )}
