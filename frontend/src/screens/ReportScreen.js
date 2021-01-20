@@ -25,12 +25,40 @@ const ReportScreen = () => {
     dispatch(getOrders())
   }, [dispatch, from, to])
 
-  //   const filteredProducts = (e) => {
-  //     products &&
-  //       products.filter(
-  //         (product) => product.createdAt >= from && product.createdAt <= to
-  //       )
-  //   }
+  const filteredOrders =
+    orders &&
+    orders.filter((order) => order.createdAt >= from && order.createdAt <= to)
+
+  const noOfOrders = filteredOrders && filteredOrders.length
+  const noOfSubTotalOrders =
+    filteredOrders &&
+    filteredOrders.reduce((acc, item) => acc + item.totalPrice, 0).toFixed(2)
+
+  const noOfDiscountOrders =
+    filteredOrders &&
+    filteredOrders
+      .reduce((acc, item) => acc + item.discountAmount, 0)
+      .toFixed(2)
+
+  const noOfPaidAmountOrders =
+    filteredOrders &&
+    filteredOrders.reduce((acc, item) => acc + item.paidAmount, 0).toFixed(2)
+
+  const noOfTotalOrders =
+    filteredOrders &&
+    filteredOrders.reduce((acc, item) => acc + item.totalPrice, 0).toFixed(2)
+
+  const totalProductsStockPrice =
+    products &&
+    products
+      .reduce((acc, item) => acc + item.countInStock * item.price, 0)
+      .toFixed(2)
+
+  const totalProductsStock =
+    products && products.filter((item) => item.countInStock > 0)
+
+  const totalProductsOutOfStock =
+    products && products.filter((item) => item.countInStock === 0)
 
   return (
     <>
@@ -41,59 +69,70 @@ const ReportScreen = () => {
       ) : (
         <>
           <div className='row'>
-            <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
-              <label htmlFor='from'>From</label>
-              <input
-                type='date'
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                name='from'
-                className='form-control'
-              />
-            </div>
-            <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
-              <label htmlFor='to'>To</label>
-              <input
-                type='date'
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                name='to'
-                className='form-control'
-              />
+            <div className='mx-auto col-lg-8 col-md-8 col-sm-12 col-12'>
+              <div className='row'>
+                <div className='col-md-6 col-sm-12 col-12'>
+                  <label htmlFor='from'>From</label>
+                  <input
+                    type='date'
+                    value={from}
+                    onChange={(e) => setFrom(e.target.value)}
+                    name='from'
+                    className='form-control'
+                  />
+                </div>
+                <div className='col-md-6 col-sm-12 col-12'>
+                  <label htmlFor='to'>To</label>
+                  <input
+                    type='date'
+                    value={to}
+                    onChange={(e) => setTo(e.target.value)}
+                    name='to'
+                    className='form-control'
+                  />
+                </div>
+              </div>
             </div>
           </div>
           <div className='row'>
-            <div className='mx-auto col-lg-6 col-md-6 col-sm-12 col-12'>
+            <div className='mx-auto col-lg-8 col-md-8 col-sm-12 col-12'>
               <div className='card'>
-                <div className='card-header'>Products</div>
+                <div className='card-header'>Orders</div>
                 <ul className='list-group list-group-flush'>
                   <li className='list-group-item'>
-                    Products In Stock: {products && products.length}
+                    No. of Orders: {noOfOrders}
                   </li>
                   <li className='list-group-item'>
-                    Products Price: $
-                    {products &&
-                      products
-                        .reduce(
-                          (acc, item) => acc + item.countInStock * item.price,
-                          0
-                        )
-                        .toFixed(2)}
+                    No. of Subtotal Orders: ${noOfSubTotalOrders}
+                  </li>
+                  <li className='list-group-item'>
+                    No. of Discount Orders: ${noOfDiscountOrders}
+                  </li>
+                  <li className='list-group-item'>
+                    No. of Paid Amount Orders: ${noOfPaidAmountOrders}
+                  </li>
+                  <li className='list-group-item'>
+                    No. of Balance / Loan Orders: $
+                    {noOfTotalOrders -
+                      noOfPaidAmountOrders -
+                      noOfDiscountOrders}
                   </li>
                 </ul>
               </div>
             </div>
 
-            <div className='mx-auto col-lg-6 col-md-6 col-sm-12 col-12'>
+            <div className='mx-auto col-lg-8 col-md-8 col-sm-12 col-12'>
               <div className='card'>
-                <div className='card-header'>Orders</div>
+                <div className='card-header'>Products</div>
                 <ul className='list-group list-group-flush'>
-                  <li className='list-group-item'>No. of Orders: 6,321</li>
                   <li className='list-group-item'>
-                    No. of Orders Price: $98,321
+                    Products In Out Of Stock: {totalProductsOutOfStock.length}
                   </li>
                   <li className='list-group-item'>
-                    No. of Orders Loan: $-7,321
+                    Products In Stock: {totalProductsStock.length}
+                  </li>
+                  <li className='list-group-item'>
+                    Products In Stock Price: ${totalProductsStockPrice}
                   </li>
                 </ul>
               </div>

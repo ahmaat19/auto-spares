@@ -271,7 +271,7 @@ const ProductScreen = () => {
         <input
           type='text'
           className='form-control'
-          placeholder='Search by mobile number'
+          placeholder='Search by product name'
           name='search'
           min='0'
           value={search}
