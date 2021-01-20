@@ -44,8 +44,10 @@ const OrderDetailsScreen = ({ match }) => {
                 <li className='list-group-item text-center'>SABRA AUTO</li>
                 <div className='cart-body p-3'>
                   <div className='cart-text'>
-                    <p className='text-center'>i# {order._id}</p>
-                    <p className='text-right'>Customer: {order.mobile}</p>
+                    <p className='text-center '>
+                      <span className='fw-bold'>Invoice#:</span> {order._id}
+                    </p>
+                    <p className='text-center'>Customer: {order.mobile}</p>
                     <div
                       className='table-responsive '
                       style={{ fontSize: '0.7rem' }}
@@ -67,7 +69,7 @@ const OrderDetailsScreen = ({ match }) => {
                                 <td>{ord.qty}</td>
                                 <td>${addDecimal(ord.price)}</td>
                                 <td>
-                                  ${addDecimal(ord.price) * Number(ord.qty)}
+                                  ${addDecimal(ord.price * Number(ord.qty))}
                                 </td>
                               </tr>
                             ))}

@@ -49,12 +49,13 @@ const OrderEditScreen = ({
             </div>
             <div className='modal-body'>
               {successUpdate && (
-                <Message variant='success'>
-                  Order has been updated successfully.
-                </Message>
+                <Message variant='success'>Order Updated Successfully</Message>
               )}
-              {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
-              {loadingUpdate && <Loader />}
+              {loadingUpdate ? (
+                <Loader />
+              ) : (
+                errorUpdate && <Message variant='danger'>{errorUpdate}</Message>
+              )}
 
               {loading ? (
                 <Loader />

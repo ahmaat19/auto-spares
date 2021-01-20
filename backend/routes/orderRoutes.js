@@ -1,6 +1,7 @@
 import express from 'express'
 import {
   addOrderItems,
+  deleteOrder,
   getOrderById,
   getOrders,
   updateOrder,
@@ -11,6 +12,10 @@ const router = express.Router()
 
 router.route('/').post(protect, admin, addOrderItems).get(protect, getOrders)
 
-router.route('/:id').get(protect, getOrderById).put(protect, updateOrder)
+router
+  .route('/:id')
+  .get(protect, getOrderById)
+  .put(protect, updateOrder)
+  .delete(protect, deleteOrder)
 
 export default router

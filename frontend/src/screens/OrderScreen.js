@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
-import { getOrders, updateOrder } from '../actions/orderActions'
-import { FaEdit, FaPrint, FaTrash } from 'react-icons/fa'
+import { getOrders, updateOrder, deleteOrder } from '../actions/orderActions'
+import { FaEdit, FaPrint, FaSearch, FaTrash } from 'react-icons/fa'
 import { confirmAlert } from 'react-confirm-alert'
 import { Confirm } from '../components/Confirm'
 import OrderEditScreen from './OrderEditScreen'
@@ -16,6 +16,7 @@ const OrderScreen = () => {
   const [discountAmount, setDiscountAmount] = useState(0.0)
   const [totalPrice, setTotalPrice] = useState([])
   const [orderId, setOrderId] = useState(null)
+  const [search, setSearch] = useState('')
 
   const dispatch = useDispatch()
 
@@ -29,6 +30,12 @@ const OrderScreen = () => {
     loading: loadingUpdate,
   } = orderUpdate
 
+  const orderDelete = useSelector((state) => state.orderDelete)
+  const {
+    error: errorDelete,
+    loading: loadingDelete,
+    success: successDelete,
+  } = orderDelete
   //   Calculate prices
   const addDecimal = (num) => {
     return (Math.round(num * 100) / 100).toFixed(2)
@@ -43,13 +50,13 @@ const OrderScreen = () => {
 
   useEffect(() => {
     dispatch(getOrders())
-    if (successUpdate) {
+    if (successUpdate || successDelete) {
       formCleanHandler()
     }
-  }, [dispatch, successUpdate])
+  }, [dispatch, successUpdate, successDelete])
 
   const deleteHandler = (id) => {
-    confirmAlert(Confirm(() => dispatch))
+    confirmAlert(Confirm(() => dispatch(deleteOrder(id))))
   }
 
   const editHandler = (e) => {
@@ -61,7 +68,7 @@ const OrderScreen = () => {
   }
 
   const submitHandler = (e) => {
-    // e.preventDefault()
+    e.preventDefault()
 
     dispatch(
       updateOrder({
@@ -78,11 +85,23 @@ const OrderScreen = () => {
   const itemsPerPage = 5
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = orders && orders.slice(indexOfFirstItem, indexOfLastItem)
+  const filterOrder =
+    orders && orders.filter((ord) => ord.mobile.includes(search))
+
+  const currentItems =
+    filterOrder && filterOrder.slice(indexOfFirstItem, indexOfLastItem)
   const totalItems = orders && Math.ceil(orders.length / itemsPerPage)
 
   return (
     <>
+      {successDelete && (
+        <Message variant='success'>Order Deleted Successfully</Message>
+      )}
+      {loadingDelete ? (
+        <Loader />
+      ) : (
+        errorDelete && <Message variant='danger'>{errorDelete}</Message>
+      )}
       {loading ? (
         <Loader />
       ) : error ? (
@@ -90,6 +109,23 @@ const OrderScreen = () => {
       ) : (
         <div>
           <h6 className='fw-light-fs-3'>Orders</h6>
+
+          <div className='input-group mb-3'>
+            <input
+              type='number'
+              className='form-control'
+              placeholder='Search by mobile number'
+              name='search'
+              min='0'
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              aria-describedby='basic-addon2'
+            />
+            <span className='input-group-text' id='basic-addon2'>
+              <FaSearch />
+            </span>
+          </div>
+
           <div className='table-responsive'>
             <table className='table table-sm hover bordered striped'>
               <thead>
@@ -153,7 +189,6 @@ const OrderScreen = () => {
               </tbody>
             </table>
           </div>
-
           <OrderEditScreen
             submitHandler={submitHandler}
             mobile={mobile}

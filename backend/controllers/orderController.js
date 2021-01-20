@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler'
 import OrderModel from '../models/orderModel.js'
+import ProductModel from '../models/productModel.js'
 
 export const addOrderItems = asyncHandler(async (req, res) => {
   const {
@@ -22,6 +23,12 @@ export const addOrderItems = asyncHandler(async (req, res) => {
       paidAmount,
       discountAmount,
       totalPrice,
+    })
+
+    order.orderItems.map(async (item) => {
+      const product = await ProductModel.findById(item.product)
+      product.countInStock = product.countInStock - Number(item.qty)
+      product.save()
     })
 
     const createdOrder = await order.save()
@@ -70,31 +77,19 @@ export const updateOrder = asyncHandler(async (req, res) => {
   }
 })
 
-// const getMyOrders = asyncHandler(async (req, res) => {
-//   const orders = await Order.find({ user: req.user._id })
-//   res.json(orders)
-// })
+export const deleteOrder = asyncHandler(async (req, res) => {
+  const order = await OrderModel.findById(req.params.id)
+  if (order) {
+    order.orderItems.map(async (item) => {
+      const product = await ProductModel.findById(item.product)
+      product.countInStock = product.countInStock + Number(item.qty)
+      product.save()
+    })
 
-// const updateOrderToDelivered = asyncHandler(async (req, res) => {
-//   console.log(req.params.id)
-//   const order = await Order.findById(req.params.id)
-
-//   if (order) {
-//     order.isDelivered = true
-//     order.deliveredAt = Date.now()
-//     const updatedOrder = await order.save()
-//     res.json(updatedOrder)
-//   } else {
-//     res.status(404)
-//     throw new Error('Order not found')
-//   }
-// })
-
-// export {
-//   addOrderItems,
-//   getOrderById,
-//   updateOrderToPaid,
-//   getMyOrders,
-//   getOrders,
-//   updateOrderToDelivered,
-// }
+    await order.remove()
+    res.json({ message: 'Order removed' })
+  } else {
+    res.status(404)
+    throw new Error('Order not found')
+  }
+})

@@ -10,7 +10,7 @@ import {
 } from '../actions/productActions'
 import { confirmAlert } from 'react-confirm-alert'
 import { Confirm } from '../components/Confirm'
-import { FaTrash, FaEdit } from 'react-icons/fa'
+import { FaTrash, FaEdit, FaSearch } from 'react-icons/fa'
 import Pagination from '../components/Pagination'
 
 const ProductScreen = () => {
@@ -21,6 +21,7 @@ const ProductScreen = () => {
   const [category, setCategory] = useState('')
   const [price, setPrice] = useState('')
   const [countInStock, setCountInStock] = useState('')
+  const [search, setSearch] = useState('')
 
   const dispatch = useDispatch()
   const productList = useSelector((state) => state.productList)
@@ -103,8 +104,13 @@ const ProductScreen = () => {
   const itemsPerPage = 5
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const filterOrder =
+    products &&
+    products.filter((prod) =>
+      prod.name.toLowerCase().includes(search.toLowerCase())
+    )
   const currentItems =
-    products && products.slice(indexOfFirstItem, indexOfLastItem)
+    filterOrder && filterOrder.slice(indexOfFirstItem, indexOfLastItem)
   const totalItems = products && Math.ceil(products.length / itemsPerPage)
 
   return (
@@ -259,6 +265,22 @@ const ProductScreen = () => {
           {' '}
           <i className='fas fa-plus'></i> REGISTER NEW PRODUCT
         </button>
+      </div>
+
+      <div className='input-group my-3'>
+        <input
+          type='text'
+          className='form-control'
+          placeholder='Search by mobile number'
+          name='search'
+          min='0'
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          aria-describedby='basic-addon2'
+        />
+        <span className='input-group-text' id='basic-addon2'>
+          <FaSearch />
+        </span>
       </div>
 
       {successDelete && (

@@ -16,6 +16,7 @@ import ProductDetailsScreen from '../../screens/ProductDetailsScreen'
 import CartScreen from '../../screens/CartScreen'
 import OrderDetailsScreen from '../../screens/OrderDetailsScreen'
 import OrderScreen from '../../screens/OrderScreen'
+import ReportScreen from '../../screens/ReportScreen'
 
 const Routes = () => {
   return (
@@ -28,6 +29,7 @@ const Routes = () => {
         />
         <AdminPrivateRoute path='/admin/product' component={ProductScreen} />
         <Route path='/register' component={RegisterScreen} />
+        <AdminPrivateRoute path='/admin/report' component={ReportScreen} />
         <PrivateRoute path='/profile' component={ProfileScreen} />
         <AdminPrivateRoute
           exact
