@@ -30,9 +30,18 @@ const ReportScreen = () => {
     orders.filter((order) => order.createdAt >= from && order.createdAt <= to)
 
   const noOfOrders = filteredOrders && filteredOrders.length
+
   const noOfSubTotalOrders =
     filteredOrders &&
     filteredOrders.reduce((acc, item) => acc + item.totalPrice, 0).toFixed(2)
+
+  const noOfCostPriceArray =
+    filteredOrders &&
+    filteredOrders.map((filter) =>
+      filter.orderItems
+        .reduce((acc, item) => acc + item.costPrice * item.qty, 0)
+        .toFixed(2)
+    )
 
   const noOfDiscountOrders =
     filteredOrders &&
@@ -51,7 +60,7 @@ const ReportScreen = () => {
   const totalProductsStockPrice =
     products &&
     products
-      .reduce((acc, item) => acc + item.countInStock * item.price, 0)
+      .reduce((acc, item) => acc + item.countInStock * item.costPrice, 0)
       .toFixed(2)
 
   const totalProductsStock =
@@ -59,6 +68,12 @@ const ReportScreen = () => {
 
   const totalProductsOutOfStock =
     products && products.filter((item) => item.countInStock === 0)
+
+  const noOfCostPrice = noOfCostPriceArray
+    .reduce((acc, item) => Number(acc) + Number(item), 0)
+    .toFixed(2)
+
+  const totalProfit = noOfSubTotalOrders - noOfDiscountOrders - noOfCostPrice
 
   return (
     <>
@@ -112,10 +127,13 @@ const ReportScreen = () => {
                     No. of Paid Amount Orders: ${noOfPaidAmountOrders}
                   </li>
                   <li className='list-group-item'>
-                    No. of Balance / Loan Orders: $
+                    No. of Balance / Loans: $
                     {noOfTotalOrders -
                       noOfPaidAmountOrders -
                       noOfDiscountOrders}
+                  </li>
+                  <li className='list-group-item'>
+                    No. of Profit: ${totalProfit}
                   </li>
                 </ul>
               </div>

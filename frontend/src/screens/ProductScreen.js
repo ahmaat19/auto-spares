@@ -20,6 +20,7 @@ const ProductScreen = () => {
   const [brand, setBrand] = useState('')
   const [category, setCategory] = useState('')
   const [price, setPrice] = useState('')
+  const [costPrice, setCostPrice] = useState('')
   const [countInStock, setCountInStock] = useState('')
   const [search, setSearch] = useState('')
 
@@ -57,6 +58,7 @@ const ProductScreen = () => {
     setCategory('')
     setCountInStock('')
     setPrice('')
+    setCostPrice('')
     setEdit(false)
   }
 
@@ -83,10 +85,20 @@ const ProductScreen = () => {
             brand,
             category,
             price,
+            costPrice,
             countInStock,
           })
         )
-      : dispatch(createProduct({ name, brand, category, price, countInStock }))
+      : dispatch(
+          createProduct({
+            name,
+            brand,
+            category,
+            price,
+            costPrice,
+            countInStock,
+          })
+        )
   }
 
   const editHandler = (e) => {
@@ -94,6 +106,7 @@ const ProductScreen = () => {
     setCategory(e.category)
     setCountInStock(e.countInStock)
     setPrice(e.price)
+    setCostPrice(e.costPrice)
     setName(e.name)
     setId(e._id)
     setEdit(true)
@@ -203,6 +216,20 @@ const ProductScreen = () => {
                         value={category}
                         className='form-control '
                         placeholder='Enter product category'
+                      />
+                    </div>
+
+                    <div className='form-group'>
+                      <label htmlFor='costPrice'>Product Cost Price</label>
+                      <input
+                        required
+                        name='costPrice'
+                        onChange={(e) => setCostPrice(e.target.value)}
+                        type='number'
+                        min='0'
+                        value={costPrice}
+                        className='form-control '
+                        placeholder='Enter product cost price'
                       />
                     </div>
 

@@ -35,7 +35,7 @@ const CartScreen = ({ match, location, history }) => {
     }
 
     // eslint-disable-next-line
-  }, [history, success])
+  }, [history, success, error])
 
   useEffect(() => {
     if (productId) {
@@ -97,7 +97,7 @@ const CartScreen = ({ match, location, history }) => {
                               )
                             }
                           >
-                            <option value=''>QTY</option>
+                            <option value='0'>QTY</option>
                             {[...Array(item.countInStock).keys()].map((x) => (
                               <option key={x + 1} value={x + 1}>
                                 {x + 1}
@@ -128,8 +128,12 @@ const CartScreen = ({ match, location, history }) => {
             <ul className='list-group list-group-flush pt-1'>
               <li className='list-group-item fw-light fs-5'>
                 ORDER SUMMARY <br />
-                {error && <Message variant='danger'> {error} </Message>}
               </li>
+              {error && (
+                <li className='list-group-item'>
+                  <Message variant='danger'>{error}</Message>
+                </li>
+              )}
 
               <li className='list-group-item'>
                 <div className='row'>

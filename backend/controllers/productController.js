@@ -16,7 +16,7 @@ export const getProductById = asyncHandler(async (req, res) => {
   }
 })
 export const deleteProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id)
+  const product = await ProductModel.findById(req.params.id)
   if (product) {
     await product.remove()
     res.json({ message: 'Product removed' })
@@ -27,7 +27,7 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 })
 
 export const createProduct = asyncHandler(async (req, res) => {
-  const { name, brand, category, price, countInStock } = req.body
+  const { name, brand, category, price, countInStock, costPrice } = req.body
   const user = req.user.id
 
   const product = new ProductModel({
@@ -36,6 +36,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     category,
     price,
     countInStock,
+    costPrice,
     user,
   })
 
@@ -44,7 +45,7 @@ export const createProduct = asyncHandler(async (req, res) => {
 })
 
 export const updateProduct = asyncHandler(async (req, res) => {
-  const { name, brand, category, price, countInStock } = req.body
+  const { name, brand, category, price, countInStock, costPrice } = req.body
   const user = req.user.id
 
   const product = await ProductModel.findById(req.params.id)
@@ -53,6 +54,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     product.name = name
     product.brand = brand
     product.category = category
+    product.costPrice = costPrice
     product.price = price
     product.countInStock = countInStock
     product.user = user
