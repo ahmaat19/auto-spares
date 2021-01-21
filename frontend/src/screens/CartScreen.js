@@ -2,11 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../components/Message'
-import {
-  addToCart,
-  removeFromCart,
-  listProduct,
-} from '../actions/productActions'
+import { addToCart, removeFromCart } from '../actions/productActions'
 import { createOrder } from '../actions/orderActions'
 import { FaTrash, FaCheckCircle } from 'react-icons/fa'
 
@@ -24,12 +20,15 @@ const CartScreen = ({ match, location, history }) => {
   const orderCreate = useSelector((state) => state.orderCreate)
   const { order, success, error } = orderCreate
 
-  const productList = useSelector((state) => state.productList)
-  const { products } = productList
-
   useEffect(() => {
     if (success) {
       history.push(`/order/${order._id}`)
+      if (localStorage.cartItems) {
+        localStorage.removeItem('cartItems')
+      }
+    }
+
+    if (error) {
       if (localStorage.cartItems) {
         localStorage.removeItem('cartItems')
       }
@@ -39,7 +38,6 @@ const CartScreen = ({ match, location, history }) => {
   }, [history, success])
 
   useEffect(() => {
-    dispatch(listProduct())
     if (productId) {
       dispatch(addToCart(productId, qty))
     }
@@ -55,23 +53,6 @@ const CartScreen = ({ match, location, history }) => {
 
   const submitHandler = (e) => {
     e.preventDefault()
-
-    dispatch(listProduct())
-    // console.log(products && products)
-
-    // products &&
-    //   products.map((product) =>
-    //     cartItems.map(
-    //       (item) =>
-    //         product._id === item.product &&
-    //         product.countInStock < item.qty &&
-    //         console.log('Out of Stock')
-    //       // console.log('QTY', item.qty, 'Stock', product.countInStock)
-    //     )
-    //   )
-
-    // console.log(cartItems)
-
     const order = {
       mobile,
       paidAmount,
@@ -80,7 +61,6 @@ const CartScreen = ({ match, location, history }) => {
       orderItems: cartItems,
     }
 
-    // console.log(order)
     dispatch(createOrder(order))
   }
 
@@ -117,9 +97,7 @@ const CartScreen = ({ match, location, history }) => {
                               )
                             }
                           >
-                            <option value='0' disabled='disabled'>
-                              QTY
-                            </option>
+                            <option value=''>QTY</option>
                             {[...Array(item.countInStock).keys()].map((x) => (
                               <option key={x + 1} value={x + 1}>
                                 {x + 1}
@@ -199,6 +177,7 @@ const CartScreen = ({ match, location, history }) => {
                   <button
                     type='submit'
                     className='btn btn-success btn-sm float-end mt-1'
+                    disabled={totalPrice <= 0}
                   >
                     <FaCheckCircle /> Recept
                   </button>

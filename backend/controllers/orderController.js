@@ -1,7 +1,6 @@
 import asyncHandler from 'express-async-handler'
 import OrderModel from '../models/orderModel.js'
 import ProductModel from '../models/productModel.js'
-
 export const addOrderItems = asyncHandler(async (req, res) => {
   const {
     orderItems,
@@ -14,7 +13,6 @@ export const addOrderItems = asyncHandler(async (req, res) => {
   if (orderItems && orderItems.length === 0) {
     res.status(400)
     throw new Error('No order items')
-    return
   } else {
     const order = new OrderModel({
       orderItems,
@@ -25,13 +23,20 @@ export const addOrderItems = asyncHandler(async (req, res) => {
       totalPrice,
     })
 
-    order.orderItems.map(async (item) => {
+    const products = []
+    for (const item of order.orderItems) {
       const product = await ProductModel.findById(item.product)
-      product.countInStock = product.countInStock - Number(item.qty)
-      product.save()
-    })
+      if (item.qty <= product.countInStock) {
+        product.countInStock = product.countInStock - Number(item.qty)
+        products.push(product)
+      } else {
+        res.status(400)
+        throw new Error(`The product ${product.name} is out of stock`)
+      }
+    }
 
     const createdOrder = await order.save()
+    await Promise.all(products.map(async (pro) => await pro.save()))
     res.status(201).json(createdOrder)
   }
 })
